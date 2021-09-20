@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>SimpleWebPage</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+  <div style="margin: 2%;"></div>
+
+<div class="container">
+
+  <div class="row">
+
+    <div class="col-sm-4">
+      <p>
+        <h3>Query: {The Great Wall}</h3>
+        <span style="border: 1px solid lightgrey;">1. How is the entity on the right panel relevant to the query?</span>
+        <form id="questionOne">
+          <div class="form-check" onclick="showQuestionTwo()">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+          <label class="form-check-label" for="flexRadioDefault1">
+            Excellent
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+          <label class="form-check-label" for="flexRadioDefault2">
+            Good
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" checked>
+          <label class="form-check-label" for="flexRadioDefault2">
+            Poor
+          </label>
+        </div>
+        </form>
+
+         <!--  for question 2   --> 
+         <form id="questionTwo" style="display: none;">
+            <span style="border: 1px solid lightgrey;">2.Which parts of the conetent are relevant to the query?            
+            </span>
+          <div class="form-check" >
+            <input class="form-check-input" type="checkbox" value="" id="one">
+            <label class="form-check-label" for="flexCheckDefault">
+              Image
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="two">
+            <label class="form-check-label" for="flexCheckChecked">
+              Name
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="three">
+            <label class="form-check-label" for="flexCheckChecked">
+              Description
+            </label>
+          </div>
+         </form>   
+      </p>
+      <div id="firstQuestion" style="background-color: lightgrey;">
+        <button type="button" class="btn btn-primary btn-sm" onclick="finalScore()">Submit</button>
+        <button onclick="reloadPage()" type="button" class="btn btn-primary btn-sm">Skip</button>
+        <p id="message-el"></p>
+      </div>
+    </div>
+
+    <div class="col-sm-4">
+      <div style="border: 1px solid grey;">
+        <h3><span style="color: blue;">Name:</span> The Great Wall</h3>
+      </div>
+      
+      <h3 style="color: blue;">Description:</h3>
+        <p>The Great Wall (Chinese: 长城) is a 2016 science fantasy action monster film directed by Zhang Yimou, with a screenplay by Carlo Bernard, Doug Miro and Tony Gilroy, from a story by Max Brooks, Edward Zwick and Marshall Herskovitz. An American and Chinese co-production starring Matt Damon, Jing Tian, Pedro Pascal, Willem Dafoe, and Andy Lau, the plot centers around a European mercenary warrior (Matt Damon) imprisoned by imperial Chinese forces within the Great Wall of China after arriving in search of gunpowder, eventually joining forces with the Chinese to help combat an alien threat. The Great Wall is Zhang's first English-language film.[7]</p>
+        <p>Principal photography for the film began on March 30, 2015, in Qingdao, China, and it premiered in Beijing on December 6, 2016. It was released by China Film Group in China on December 16, 2016, and in the United States on February 17, 2017 by Universal Pictures. The film received negative reviews from critics, with praise for its action sequences, though the plot received criticism.[8] Although it grossed $335 million worldwide, the film was still considered a box office bomb due to its high production and marketing costs, with losses as high as $75 million.</p>
+    </div>
+
+    <div class="col-sm-4">
+      <div class="card" style="width: 18rem;">
+        <img class="card-img-top" src="https://upload.wikimedia.org/wikipedia/en/c/cd/The_Great_Wall_%28film%29.png" alt="Card image cap">
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  
+let q1_value = 0;
+let q2_value = 0;
+let sum = 0;
+
+var elements = document.querySelectorAll("#questionOne div"),
+listNumber = [], index;
+
+//putting div index in an array
+for (var i = 0; i < elements.length; i++){
+  listNumber.push(elements[i].innerHTML);
+}
+
+//getting index of element
+for(var i = 0; i < elements.length; i++){
+  elements[i].onclick = function(){
+    index = listNumber.indexOf(this.innerHTML);
+    if(index === 0){
+      q1_value = 100;
+      sum = q1_value;
+      showQuestionTwo();
+    }else if(index === 1){
+      q1_value = 50;
+      sum = q1_value;
+    }else{
+      q1_value = 0;
+      sum = q1_value;
+    }
+  };
+}
+
+function showQuestionTwo(){
+  document.getElementById('questionTwo').style.display = "block";
+};
+
+function reloadPage(){
+  window.location.reload();
+  resetValues();
+}
+
+function resetValues(){
+  q1_value = 0;
+  q2_value = 0;
+  sum = 0;
+}
+
+function finalScore(){
+ var scoreOne = $("#one").is(':checked');
+ var scoreTwo = $("#two").is(':checked');
+ var scoreThree = $("#three").is(':checked');
+
+if(scoreOne == true){
+ q2_value += 50;
+}
+if(scoreTwo == true){
+ q2_value += 50;
+}
+if(scoreThree == true){
+ q2_value += 25;
+}
+
+sum = q1_value + q2_value;
+
+q2_value = 0;
+
+sendToSever();
+}
+
+function sendToSever(){
+  var http = new XMLHttpRequest();
+  var url = '/SendToServer';
+  var params = 'sum='+sum;
+  console.log(params);
+  http.open('POST', url, true);
+
+  //Send the proper header information along with the request
+  http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+  http.onreadystatechange = function() {
+  //Call a function when the state changes.
+      if(http.readyState == 4 && http.status == 200) {
+          alert(http.responseText);
+      }
+  }
+  http.send(params);
+}
+
+</script>
+</body>
+</html>
